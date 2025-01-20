@@ -1,12 +1,12 @@
 # Lakehead_PL_Project1
 
 ## Deadline:
-Nov 29, 2024
+Feb 3, 2025
 
 ## What we need to do:
 	• ReadMe file, to explain your idea.
 	• PPT
-  • program (two strategies)
+  	• program (two strategies)
  
 	
 
@@ -15,13 +15,13 @@ Nov 29, 2024
 	• Prototyper(s)(2): Whom will experiment in Python with various algorithms
 	• Tester(2): Who will generate test cases and test if the program can pass all the cases
 	• Editor(2): Who will edit and revise the executive summary document and the PPT presentation slides.
-  • Presentor(1): Who will give the presentation
+  	• Presentor(1): Who will give the presentation
 
  ## Role Assignment:
 	 Prototyper: Bowen Tao(Frank)
 	 Mindmap Driver:
 	 Presentor:
-   Tester
+   	 Tester
 	 Editor: 
 
 
