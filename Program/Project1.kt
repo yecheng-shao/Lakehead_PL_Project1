@@ -1,90 +1,108 @@
+
+import kotlin.random.Random
+import kotlin.math.max
+
 class Bagging {
-    fun _first_fit(item, capacity) {
-        var bag = 0
-        var bag_list = []
-        for (i in item) {
-            if (bag_list.isEmpty()) {
-                bag_list.append(capacity - i)
+    private fun firstFit(items: IntArray, capacity: Int): Int {
+        val bagList = mutableListOf<Int>()
+        for (i in items) {
+            if (bagList.isEmpty()) {
+                bagList.add(capacity - i)
             } else {
-                for (j in bag_list) {
-                    if (j >= i) {
-                        bag_list[bag_list.index(j)] = j - i
-                        break
-                    } else if (j == bag_list.last()) {
-                        bag_list.append(capacity - i)
+                var placed = false
+                for (j in bagList.indices) {
+                    if (bagList[j] >= i) {
+                        bagList[j] -= i
+                        placed = true
                         break
                     }
+                }
+                if (!placed) {
+                    bagList.add(capacity - i)
                 }
             }
         }
-        return bag_list.size
+        return bagList.size
     }
 
-    fun _best_fit(item, capacity) {
-        var bag = 0
-        var bag_list = []
-        for (i in item) {
-            if (bag_list.isEmpty()) {
-                bag_list.append(capacity - i)
+    private fun bestFit(items: IntArray, capacity: Int): Int {
+        val bagList = mutableListOf<Int>()
+        for (i in items) {
+            if (bagList.isEmpty()) {
+                bagList.add(capacity - i)
             } else {
-                var min = capacity
-                var index = 0
-                for (j in bag_list) {
-                    if (j >= i && j - i < min) {
-                        min = j - i
-                        index = bag_list.index(j)
+                var minIndex = -1
+                var minSpaceLeft = capacity
+                for (j in bagList.indices) {
+                    if (bagList[j] >= i && bagList[j] - i < minSpaceLeft) {
+                        minSpaceLeft = bagList[j] - i
+                        minIndex = j
                     }
                 }
-                if (min == capacity) {
-                    bag_list.append(capacity - i)
+                if (minIndex == -1) {
+                    bagList.add(capacity - i)
                 } else {
-                    bag_list[index] = min
+                    bagList[minIndex] = minSpaceLeft
                 }
             }
         }
-        return bag_list.size
+        return bagList.size
     }
 
-    fun _dp(item, capacity) {
-        var bag = 0
-        var bag_list = []
-        for (i in item) {
-            if (bag_list.isEmpty()) {
-                bag_list.append(capacity - i)
-            } else {
-                var dp = Array(bag_list.size + 1) { Array(capacity + 1) { 0 } }
-                for (j in 1..bag_list.size) {
-                    for (k in 1..capacity) {
-                        if (k >= i) {
-                            dp[j][k] = max(dp[j - 1][k], dp[j - 1][k - i] + i)
-                        } else {
-                            dp[j][k] = dp[j - 1][k]
-                        }
-                    }
+    private fun dp(items: IntArray, capacity: Int): Int {
+        val dp = IntArray(capacity + 1) { 0 }  // DP array to track best bin usage
+
+        var binCount = 0
+
+        for (i in items) {
+            // Try to fit the item in an existing bin
+            var placed = false
+            for (j in dp.indices.reversed()) { // Iterate in reverse to avoid overwriting
+                if (dp[j] >= i) {
+                    dp[j] -= i
+                    placed = true
+                    break
                 }
-                bag_list = dp.last().toMutableList()
+            }
+
+            // If no existing bin can fit this item, open a new bin
+            if (!placed) {
+                dp[capacity] = capacity - i  // Use a new bin
+                binCount++
             }
         }
-        return bag_list.size
+
+        return binCount
     }
 
-    fun _generate_test_case() {
-        var item = []
-        var capacity = 0
-        for (i in 1..100) {
-            item.append(random.randint(1, 100))
-            capacity += item.last()
-        }
-        return item, capacity
+
+    fun generateTestCase(): Pair<IntArray, Int> {
+        val items = IntArray(Random.nextInt(1, 100)) { Random.nextInt(1, 100) }
+        val totalCapacity = items.sum()
+        val capacity = Random.nextInt(1, totalCapacity);
+        return Pair(items, capacity)
     }
 
-    fun bagOfRocks(items: IntArray, bagVolumn: Int): Int {
-        var first_fit = _first_fit(items, bagVolumn)
-        var best_fit = _best_fit(items, bagVolumn)
-        var dp = _dp(items, bagVolumn)
-        print("First Fit: " + first_fit)
-        print("Best Fit: " + best_fit)
-        print("DP: " + dp)
-        return first_fit, best_fit, dp;
+    fun bagOfRocks(items: IntArray, bagVolume: Int) {
+        val firstFit = firstFit(items, bagVolume)
+        val bestFit = bestFit(items, bagVolume)
+        val dpFit = dp(items, bagVolume)
+
+        println("First Fit: $firstFit")
+        println("Best Fit: $bestFit")
+        println("DP: $dpFit")
+    }
+}
+
+fun main() {
+    val bagging = Bagging()
+
+    repeat(5) { i ->
+        println("This is iteration $i")
+
+        val testCase = bagging.generateTestCase()
+
+        println("Generated Test Case: ${testCase.first.joinToString()} (Capacity: ${testCase.second})")
+        bagging.bagOfRocks(testCase.first, testCase.second)
     }
 }
